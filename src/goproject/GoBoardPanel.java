@@ -156,6 +156,7 @@ public class GoBoardPanel extends JPanel {
             } else {
                 whitePieces.add(selectedSpace.clone());
             }
+        }
         blackToPlay = !blackToPlay;
         selectedSpace.reset();
         highlightSelected = false;
