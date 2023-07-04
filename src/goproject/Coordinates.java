@@ -65,4 +65,20 @@ class Coordinates {
     public Coordinates clone() {
         return new Coordinates(x, y);
     }
+
+    Coordinates up() {
+        return new Coordinates(x,y-1);
+    }
+
+    Coordinates down() {
+        return new Coordinates(x,y+1);
+    }
+
+    Coordinates left() {
+        return new Coordinates(x-1,y);
+    }
+
+    Coordinates right() {
+        return new Coordinates(x+1,y);
+    }
 }

@@ -47,6 +47,7 @@ public class GoBoardPanel extends JPanel {
     private int halfCircle;
     private List<Coordinates> blackPieces;
     private List<Coordinates> whitePieces;
+    private final GoLogicalBoard board;
     private int pieceSize;
     
     private final Coordinates selectedSpace = new Coordinates();
@@ -57,6 +58,7 @@ public class GoBoardPanel extends JPanel {
         updateSize();
         blackPieces = new ArrayList<>();
         whitePieces = new ArrayList<>();
+        board = new GoLogicalBoard();
     }
     
     @Override
