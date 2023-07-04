@@ -9,7 +9,7 @@ package goproject;
  *
  * @author Ángel Marqués García 
  */
-class Coordinates {
+public class Coordinates {
     public int x;
     public int y;
     
@@ -80,5 +80,10 @@ class Coordinates {
 
     Coordinates right() {
         return new Coordinates(x+1,y);
+    }
+    
+    @Override
+    public String toString(){
+        return "("+Integer.toString(x)+","+Integer.toString(y)+")";
     }
 }

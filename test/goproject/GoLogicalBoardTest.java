@@ -95,6 +95,13 @@ public class GoLogicalBoardTest {
         boolean expResult;
         boolean result;
         
+        //test 0 empty cell
+        intersection = new Coordinates(0,0);
+        expResult = true;
+        result = instance.isAlive(intersection);
+        assertEquals(expResult, result);
+        assertEquals(expResult, instance.isAlive(new Coordinates(18,18)));
+        
         //test 1 horizontal
         intersection = new Coordinates(2,2);
         expResult = false;

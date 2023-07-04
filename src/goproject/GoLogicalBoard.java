@@ -15,6 +15,9 @@ import java.util.Set;
 class GoLogicalBoard {
     private final GoState[][] board;
     private Set<Coordinates> studyGroup;
+    int capturedByWhite = 0;
+    int capturedByBlack = 0;
+    private Set<Coordinates> dying;
 
     public GoLogicalBoard() {
         this.board = new GoState[19][19];
@@ -24,6 +27,7 @@ class GoLogicalBoard {
             }
         }
         studyGroup = new HashSet<>();
+        dying = new HashSet<>();
     }
     
     public void set(Coordinates intersection, GoState st){
@@ -49,7 +53,7 @@ class GoLogicalBoard {
             studyGroup.remove(intersection);
             return true;
         }*/
-        if (studSt == st && !studyGroup.contains(studying) && isAlive(studying)){
+        if (studSt == st && !studyGroup.contains(studying) && !dying.contains(studying) && isAlive(studying)){
             return true;
         }
         return false;
@@ -66,8 +70,9 @@ class GoLogicalBoard {
      * @return true if the piece at the intersection is alive, false otherwise
      */
     public boolean isAlive(Coordinates intersection){
-        GoState st = at(intersection);
-        if (st == null){return false;}
+        if (dying.contains(intersection)) return false;
+         GoState st = at(intersection);
+        if (st == null){return true;}
         if (st == GoState.e){return true;}
         
         studyGroup.add(intersection);
@@ -78,15 +83,62 @@ class GoLogicalBoard {
         foobar[3] = intersection.right();
         for (Coordinates cell: foobar){
             if (at(cell) == GoState.e || at(cell) == null){
+                studyGroup.remove(intersection);
                 return true;
             }
         }
         for (Coordinates cell: foobar){
             if (isAliveAux(intersection,cell)){
+                studyGroup.remove(intersection);
                 return true;
             }
         }
         studyGroup.remove(intersection);
         return false;
+    }
+
+    void flagForDeath(Coordinates cell) {
+        dying.add(cell);
+        Coordinates[] foobar = new Coordinates[4];
+        foobar[0] = cell.up();
+        foobar[1] = cell.down();
+        foobar[2] = cell.left();
+        foobar[3] = cell.right();
+        for (Coordinates c: foobar){
+            if (!dying.contains(c) && !isAlive(c)){
+                flagForDeath(c);
+            }
+        }
+        
+    }
+    
+    void killFlagged(){
+        for (Coordinates cell: dying){
+            GoState st = at(cell);
+            set(cell, GoState.e);
+            GoBoardPanel.goBoardPanel.removePiece(st, cell);
+            if (st == GoState.b){
+                capturedByBlack++;
+            } else {
+                capturedByWhite++;
+            }
+        }
+    }
+    
+    
+    public int getCapturedByWhite() {
+        return capturedByWhite;
+    }
+
+    public void setCapturedByWhite(int capturedByWhite) {
+        this.capturedByWhite = capturedByWhite;
+    }
+
+    public int getCapturedByBlack() {
+        return capturedByBlack;
+    }
+
+    public void setCapturedByBlack(int capturedByBlack) {
+        this.capturedByBlack = capturedByBlack;
     }
 }

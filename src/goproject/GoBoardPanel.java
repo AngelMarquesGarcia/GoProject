@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -39,6 +40,9 @@ public class GoBoardPanel extends JPanel {
         highlightSelected = false;
     }
     
+    public static GoBoardPanel goBoardPanel;
+    
+    
     private int xSize;
     private int ySize;
     private int width;
@@ -59,6 +63,7 @@ public class GoBoardPanel extends JPanel {
         blackPieces = new ArrayList<>();
         whitePieces = new ArrayList<>();
         board = new GoLogicalBoard();
+        GoBoardPanel.goBoardPanel = this;
     }
     
     @Override
@@ -96,10 +101,8 @@ public class GoBoardPanel extends JPanel {
         for (Coordinates c: whitePieces){
             g.fillOval(c.x*width+halfW,c.y*height+halfH, pieceSize, pieceSize);
         }
-        if (blackToPlay){
-            g.setColor(Color.BLACK);
-        } else {
-        }
+
+        //Draw Selected Piece
         g.setColor(blackToPlay ? Color.BLACK : Color.WHITE);
         if (selectedSpace==null || selectedSpace.equals(0,0)) return;
         int x = selectedSpace.x;
@@ -181,14 +184,58 @@ public class GoBoardPanel extends JPanel {
         if (!selectedSpace.equals(0,0)){
             if (blackToPlay){
                 blackPieces.add(selectedSpace.clone());
+                board.set(selectedSpace, GoState.b );
             } else {
                 whitePieces.add(selectedSpace.clone());
+                board.set(selectedSpace, GoState.w );
             }
         }
+        
+        considerCaptures();
+        
         blackToPlay = !blackToPlay;
         selectedSpace.reset();
         highlightSelected = false;
         repaint();
         
+    }
+
+    private void considerCaptures() {
+        Coordinates[] foobar = new Coordinates[4];
+        foobar[0] = selectedSpace.up();
+        foobar[1] = selectedSpace.down();
+        foobar[2] = selectedSpace.left();
+        foobar[3] = selectedSpace.right();
+        for (Coordinates cell: foobar){
+            if (blackToPlay && board.at(cell) == GoState.w)  {
+                if (!board.isAlive(cell)){
+                    board.flagForDeath(cell);
+                    //whitePieces.remove(cell);
+                }
+            } else if (!blackToPlay && board.at(cell) == GoState.b){
+                if (!board.isAlive(cell)){
+                    board.flagForDeath(cell);
+                    //blackPieces.remove(cell);
+                }
+            }
+        }
+        board.killFlagged();
+    }
+    
+    public void removePiece(GoState st, Coordinates cell){
+        if (st==GoState.b){
+            blackPieces.remove(cell);
+        } else {
+            whitePieces.remove(cell);
+        }
+    }
+
+    void showCaptures() {
+        int white = board.getCapturedByWhite();
+        int black = board.getCapturedByBlack();
+        JOptionPane.showMessageDialog(GoProject.frame, 
+                "White: " + Integer.toString(white) + "\nBlack: " + Integer.toString(black), 
+                "Game Over", 
+                1);
     }
 }

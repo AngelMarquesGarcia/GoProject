@@ -5,11 +5,14 @@
 
 package goproject;
 
+import javax.swing.JFrame;
+
 /**
  *
  * @author Ángel Marqués García 
  */
 public class GoProject {
+    static JFrame frame;
 
     /**
      * @param args the command line arguments
@@ -42,7 +45,8 @@ public class GoProject {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new NewJFrame().setVisible(true);
+                frame = new NewJFrame();
+                frame.setVisible(true);
             }
         });
     }
