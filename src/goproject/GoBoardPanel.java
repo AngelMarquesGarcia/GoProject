@@ -67,28 +67,32 @@ public class GoBoardPanel extends JPanel {
         int k;
         for (int i=0;i<19;i++){
             k = i+1;
-            g.drawLine(width, k*height, width*19, k*height); //horizontal
-            g.drawLine(k*width, height, k*width, height*19); //vertical
+            g.drawLine(width/2, k*height-height/2, width*19-width/2, k*height-height/2); //horizontal
+            g.drawLine(k*width-width/2, height/2, k*width-width/2, height*19-height/2); //vertical
         }
-        g.fillOval(4*width-halfCircle, 4*height-halfCircle, circleSize, circleSize);
-        g.fillOval(10*width-halfCircle, 4*height-halfCircle, circleSize, circleSize);
-        g.fillOval(16*width-halfCircle, 4*height-halfCircle, circleSize, circleSize);
-        g.fillOval(4*width-halfCircle, 10*height-halfCircle, circleSize, circleSize);
-        g.fillOval(10*width-halfCircle, 10*height-halfCircle, circleSize, circleSize);
-        g.fillOval(16*width-halfCircle, 10*height-halfCircle, circleSize, circleSize);
-        g.fillOval(4*width-halfCircle, 16*height-halfCircle, circleSize, circleSize);
-        g.fillOval(10*width-halfCircle, 16*height-halfCircle, circleSize, circleSize);
-        g.fillOval(16*width-halfCircle, 16*height-halfCircle, circleSize, circleSize);
+        int additionWidth = -halfCircle + width/2;
+        int additionHeight = -halfCircle + height/2;
+        g.fillOval(4*width+additionWidth, 4*height+additionHeight, circleSize, circleSize);
+        g.fillOval(10*width+additionWidth, 4*height+additionHeight, circleSize, circleSize);
+        g.fillOval(16*width+additionWidth, 4*height+additionHeight, circleSize, circleSize);
+        g.fillOval(4*width+additionWidth, 10*height+additionHeight, circleSize, circleSize);
+        g.fillOval(10*width+additionWidth, 10*height+additionHeight, circleSize, circleSize);
+        g.fillOval(16*width+additionWidth, 10*height+additionHeight, circleSize, circleSize);
+        g.fillOval(4*width+additionWidth, 16*height+additionHeight, circleSize, circleSize);
+        g.fillOval(10*width+additionWidth, 16*height+additionHeight, circleSize, circleSize);
+        g.fillOval(16*width+additionWidth, 16*height+additionHeight, circleSize, circleSize);
         
-        int half = pieceSize/2;
+        int halfW = -width/2 - pieceSize/2;
+        int halfH = -height/2 - pieceSize/2;
+        
         //Draw Pieces
         g.setColor(Color.BLACK);
         for (Coordinates c: blackPieces){
-            g.fillOval(c.x*width-half,c.y*height-half, pieceSize, pieceSize);
+            g.fillOval(c.x*width+halfW,c.y*height+halfH, pieceSize, pieceSize);
         }
         g.setColor(Color.WHITE);
         for (Coordinates c: whitePieces){
-            g.fillOval(c.x*width-half,c.y*height-half, pieceSize, pieceSize);
+            g.fillOval(c.x*width+halfW,c.y*height+halfH, pieceSize, pieceSize);
         }
         if (blackToPlay){
             g.setColor(Color.BLACK);
@@ -98,10 +102,12 @@ public class GoBoardPanel extends JPanel {
         if (selectedSpace==null || selectedSpace.equals(0,0)) return;
         int x = selectedSpace.x;
         int y = selectedSpace.y;
-        g.fillOval(width*x-half,height*y-half, pieceSize, pieceSize);
+        g.fillOval(width*x+halfW,height*y+halfH, pieceSize, pieceSize);
         if (highlightSelected){
+            halfW = -width/2 - halfCircle;
+            halfH = -height/2 - halfCircle;
             g.setColor(Color.ORANGE);
-            g.fillOval(width*x-halfCircle,height*y-halfCircle, circleSize, circleSize);
+            g.fillOval(width*x+halfW,height*y+halfH, circleSize, circleSize);
         }
     }
 
@@ -118,6 +124,25 @@ public class GoBoardPanel extends JPanel {
 
     private Coordinates determineCoordinates(MouseEvent evt) {
         int x = evt.getX();
+        for (int i=1; i<=19;i++){
+            x -= width;
+            if (x<=0){
+                x = i;
+                break;
+            }
+        }
+        int y = evt.getY();
+        for (int i=1; i<=19;i++){
+            y -= height;
+            if (y<=0){
+                y = i;
+                break;
+            }
+        }
+        return new Coordinates(x,y);
+
+        //previous version
+        /*int x = evt.getX();
         for (int i = 1; i<=19; i++){
             if (x>width*i-width/2 && x<width*i+width/2){
                 x = -i;
@@ -137,6 +162,7 @@ public class GoBoardPanel extends JPanel {
         x = -x;
         y = -y;
         return new Coordinates(x,y);
+    */
     }
 
     public void setHighlightSelected(boolean b) {
@@ -160,6 +186,7 @@ public class GoBoardPanel extends JPanel {
         blackToPlay = !blackToPlay;
         selectedSpace.reset();
         highlightSelected = false;
+        repaint();
         
     }
 }
